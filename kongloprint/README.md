@@ -39,8 +39,9 @@ https://makerworld.com/de/models/1250405-motorized-door-opener-for-p1s
 1. **Start the Application**: Power on the Raspberry Pi and start the Balena application.
 2. **Monitor the Print**: Use the webcam feed to monitor the print process.
 3. **Automated Ejection**: Once the print is complete, the tool will automatically eject the print and open the printer door.
-4. **Deployment**: Run command from project repo folder.
+4. **Deployment**: Run command from project repo folder(terminal must be in kongloprint location).
     ```
+    balena login
     balena push g_chris_benishek/bambuprinter
     ```
 
