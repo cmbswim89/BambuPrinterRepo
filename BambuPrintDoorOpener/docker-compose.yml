@@ -1,0 +1,41 @@
+version: "2.1"
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+  # web:
+  #   build: ./sample-app
+  #   ports:
+  #     - 3030:3030
+  pigpio:
+    build: ./pigpio
+    restart: always
+    privileged: true
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
+      - "/dev/vcio:/dev/vcio"
+    labels:
+      io.balena.features.kernel-modules: '1'
+  door-motor:
+    build: ./door-motor
+    restart: always
+    depends_on:
+      - pigpio
+    privileged: true
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
+      - "/dev/vcio:/dev/vcio"
+      - "/dev/mem:/dev/mem"   # harmless when using -g
+    environment:
+      PIGPIO_ADDR: pigpio
+      PIGPIO_PORT: "8888"
+  #  network_mode: "host"
+  ustreamer:
+    build: ./ustreamer
+    devices:
+      - "/dev/video0:/dev/video0"
+      - "/dev/video1:/dev/video1"
+    privileged: true
+    ports:
+      - "8080:8080"
