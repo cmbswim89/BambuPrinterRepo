@@ -1,0 +1,17 @@
+# Bambu-Status/Dockerfile.template
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian:bullseye
+
+# Use balena's helper to install OS packages (no compiling needed)
+RUN install_packages \
+      python3 python3-pip python3-flask ca-certificates curl && \
+    update-ca-certificates
+
+RUN pip install paho-mqtt requests pygame 
+
+WORKDIR /usr/src/app
+COPY . .
+EXPOSE 5000
+
+
+# Start the Flask app
+CMD ["python3", "BambuStatus.py"]

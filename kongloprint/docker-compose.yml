@@ -30,7 +30,10 @@ services:
     environment:
       PIGPIO_ADDR: pigpio
       PIGPIO_PORT: "8888"
-  #  network_mode: "host"
+  Bambu-Status:
+    build: ./Bambu-Status
+    restart: always
+    privileged: true
   ustreamer:
     build: ./ustreamer
     devices:
