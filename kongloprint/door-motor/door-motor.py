@@ -149,6 +149,7 @@ def move_custom(pos):
 
 @app.route("/state")
 def state():
+    global door_is_open
     return {"open": door_is_open}
 
 @app.route("/pins")
@@ -175,81 +176,41 @@ def scan():
 
 @app.route("/open")
 def open_door():
+    global door_is_open
     pi = get_pi()
     if not pi:
         return ("pigpio not connected", 500)
-    pi.set_servo_pulsewidth(SERVO_PIN, OPEN_POSITION)
-    time.sleep(0.8)
-    pi.set_servo_pulsewidth(SERVO_PIN, 0)
+    move_servo(OPEN_POSITION)
+    door_is_open = True
+    # pi.set_servo_pulsewidth(SERVO_PIN, OPEN_POSITION)
+    # time.sleep(0.8)
+    # pi.set_servo_pulsewidth(SERVO_PIN, 0)
     return "ok"
 
 @app.route("/close")
 def close_door():
+    global door_is_open
     pi = get_pi()
     if not pi:
         return ("pigpio not connected", 500)
-    pi.set_servo_pulsewidth(SERVO_PIN, CLOSE_POSITION)
-    time.sleep(0.8)
-    pi.set_servo_pulsewidth(SERVO_PIN, 0)
+    move_servo(CLOSE_POSITION)
+    # pi.set_servo_pulsewidth(SERVO_PIN, CLOSE_POSITION)
+    # time.sleep(0.8)
+    # pi.set_servo_pulsewidth(SERVO_PIN, 0)
+    door_is_open = False
+    return "ok"
+
+@app.route("/setState/<string:state>")
+def setDoorState(state):
+    global door_is_open
+    door_is_open = state == "Open"
     return "ok"
 
 @app.route("/", methods=["GET"])
 def index():
-    return """
-    <html>
-      <head>
-        <title>Door Opener</title>
-        <style>
-          body { text-align:center; font-family:sans-serif; margin-top:30px; }
-          button { font-size:18px; margin:10px; padding:10px 20px; }
-          input[type="number"] { font-size:18px; width:220px; text-align:center; }
-          #status { margin-top:20px; font-weight:bold; color:#006600; }
-        </style>
-        <script>
-          async function sendCommand(endpoint) {
-            const statusEl = document.getElementById('status');
-            statusEl.textContent = 'Working...';
-            try {
-              const res = await fetch(endpoint);
-              if (!res.ok) throw new Error('HTTP ' + res.status);
-              const text = await res.text();
-              statusEl.style.color = '#006600';
-              statusEl.textContent = text || 'Done';
-            } catch (err) {
-              statusEl.style.color = '#cc0000';
-              statusEl.textContent = 'Error: ' + err.message;
-            }
-          }
-
-          function sendCustomMove() {
-            const val = document.getElementById('pos').value;
-            if (!val) return alert('Enter a number between 500–2500');
-            sendCommand('/door-motor/move/' + val);
-          }
-        </script>
-      </head>
-      <body>
-        <h1>Door Opener</h1>
-
-        <iframe src="/webcam/?action=stream" width="640" height="480"
-                style="border:1px solid #ccc; border-radius:8px;"></iframe>
-
-        <div>
-          <button onclick="sendCommand('/door-motor/open')">Open</button>
-          <button onclick="sendCommand('/door-motor/close')">Close</button>
-          <button onclick="sendCommand('/door-motor/diag')">Diag</button>
-        </div>
-
-        <div style="margin-top:15px;">
-          <input id="pos" type="number" min="500" max="2500"
-                 placeholder="Close(2000)-Open(500)">
-          <button onclick="sendCustomMove()">Move</button>
-        </div>
-
-        <div id="status"></div>
-      </body>
-    </html>
-    """
+    htmlFile = open("doorMotor.html",'r',encoding='utf-8')
+    sc = htmlFile.read()
+    return sc
 
 # -------------------------------------------------------------------
 # Main

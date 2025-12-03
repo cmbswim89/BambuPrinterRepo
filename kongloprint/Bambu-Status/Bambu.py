@@ -163,7 +163,7 @@ class Bambu:
                 self.nozzle_temp = p["nozzle_temper"]
             if "bed_temper" in p:
                 self.bed_temp = p["bed_temper"]
-                if self.bed_temp < Bambu.Door_Open_Temp and self.doorOpen == False and self.ComletedPrint == False:
+                if self.bed_temp < Bambu.Door_Open_Temp and self.doorOpen == False:
                     self.trigger_door_open()
                 if self.bed_temp > Bambu.Door_Open_Temp and self.doorOpen:
                     self.trigger_door_close()

@@ -51,7 +51,7 @@ https://makerworld.com/de/models/1250405-motorized-door-opener-for-p1s
 - Verify that the Raspberry Pi is connected to the internet.
 - Check the Balena dashboard for any error messages.
 
-### Contributing
+### Contributingc
 
 Feel free to submit issues or pull requests to improve the tool.
 

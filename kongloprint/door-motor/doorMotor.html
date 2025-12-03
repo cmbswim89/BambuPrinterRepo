@@ -1,0 +1,68 @@
+<html>
+      <head>
+        <title>Door Opener</title>
+        <style>
+          body { text-align:center; font-family:sans-serif; margin-top:30px; }
+          button { font-size:18px; margin:10px; padding:10px 20px; }
+          input[type="number"] { font-size:18px; width:220px; text-align:center; }
+          #status { margin-top:20px; font-weight:bold; color:#006600; }
+        </style>
+        <script>
+          async function sendCommand(endpoint) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = 'Working...';
+            try {
+              const res = await fetch(endpoint);
+              if (!res.ok) throw new Error('HTTP ' + res.status);
+              const text = await res.text();
+              statusEl.style.color = '#006600';
+              statusEl.textContent = text || 'Done';
+            } catch (err) {
+              statusEl.style.color = '#cc0000';
+              statusEl.textContent = 'Error: ' + err.message;
+            }
+          }
+
+          function sendCustomMove() {
+            const val = document.getElementById('pos').value;
+            if (!val) return alert('Enter a number between 500–2500');
+            sendCommand('/door-motor/move/' + val);
+          }
+
+        function UpdateDoorStatus() {
+            var val
+            if(document.getElementById('doorOpen').checked)
+                val = document.getElementById('doorOpen').value;
+            else
+                val = document.getElementById('doorClosed').value;
+            if (!val) return alert('Invalid Input!');
+            sendCommand('/door-motor/setState/' + val);
+          }
+        </script>
+      </head>
+      <body>
+        <h1>Door Opener</h1>
+
+        <iframe src="/webcam/?action=stream" width="640" height="480"
+                style="border:1px solid #ccc; border-radius:8px;"></iframe>
+
+        <div>
+          <button onclick="sendCommand('/door-motor/open')">Open</button>
+          <button onclick="sendCommand('/door-motor/close')">Close</button>
+          <button onclick="sendCommand('/door-motor/diag')">Diag</button>
+        </div>
+
+        <div style="margin-top:15px;">
+          <input id="pos" type="number" min="500" max="2500"
+                 placeholder="Close(2000)-Open(500)"> 
+          <button onclick="sendCustomMove()">Move</button>
+        </div>
+        <div style="margin-top:15px;">
+            <input id="doorOpen" type="radio" name="DoorState" value="Open"><label>Open</label>
+            <input id="doorClosed" type="radio" name="DoorState" value="Closed"><label>Closed</label>
+            <button onclick="UpdateDoorStatus()">Update</button>
+        </div>
+
+        <div id="status"></div>
+      </body>
+    </html>
