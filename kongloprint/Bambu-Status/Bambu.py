@@ -173,7 +173,7 @@ class Bambu:
     def completedPrint(self):
         logger.info(f"Completed Print!")
         self.ComletedPrint = True
-        self.trigger_door_open()
+        # self.trigger_door_open()
 
     def trigger_door_open(self):
         try:
