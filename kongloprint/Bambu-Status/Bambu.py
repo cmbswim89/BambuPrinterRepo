@@ -86,7 +86,6 @@ class Bambu:
             resp = json.loads(payload)
             logger.info(f"[DOOR] State Called {url}, status: {resp['open']}")
             self.doorOpen = resp["open"]
-            # self.doorOpen = True
             return resp
         except requests.RequestException as e:
             logger.error("[DOOR] Error calling door opener: %s", e)
